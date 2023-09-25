@@ -1,27 +1,32 @@
+from flask import Flask, render_template
 import pandas as pd
-from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-# Load story data from Excel
+# Load the story data from the Excel file
 df = pd.read_excel("story_data.xlsx")
-story_data = {}
-for _, row in df.iterrows():
-    node_key = row['node_key']
-    story_data[node_key] = {
-        "text": row['text'],
-        "choices": {
-            "q": {"text": row['choice_q'], "next": row['next_q']},
-            "w": {"text": row['choice_w'], "next": row['next_w']},
-            "e": {"text": row['choice_e'], "next": row['next_e']},
-            "r": {"text": row['choice_r'], "next": row['next_r']}
-        }
-    }
 
 @app.route('/')
-def index():
-    node = story_data["start"]
-    return render_template('story.html', node=node)
+def start():
+    return story("start")
 
-if __name__ == '__main__':
+@app.route('/<node_key>')
+def story(node_key):
+    row_num = df[df['node_key'] == node_key].index[0]
+    story_text = df.iloc[row_num]['text']
+    choices = {
+        'Q': df.iloc[row_num]['choice_q'],
+        'W': df.iloc[row_num]['choice_w'],
+        'E': df.iloc[row_num]['choice_e'],
+        'R': df.iloc[row_num]['choice_r']
+    }
+    next_nodes = {
+        'Q': df.iloc[row_num]['next_q'],
+        'W': df.iloc[row_num]['next_w'],
+        'E': df.iloc[row_num]['next_e'],
+        'R': df.iloc[row_num]['next_r']
+    }
+    return render_template("story.html", story_text=story_text, choices=choices, next_nodes=next_nodes)
+
+if __name__ == "__main__":
     app.run(debug=True)

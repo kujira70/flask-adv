@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>RPG Story Game</title>
+    <title>Choose Your Adventure</title>
 </head>
 <body>
-    <p>{{ node.text }}</p>
-    <ul>
-        {% for key, choice in node.choices.items() %}
-            <li><a href="{{ url_for('index') }}?choice={{ key }}">{{ choice.text }}</a></li>
-        {% endfor %}
-    </ul>
+    <h2>{{ story }}</h2>
+    <form method="post">
+        <button type="submit" name="choice" value="0">{{ choices['q'] }}</button>
+        <button type="submit" name="choice" value="1">{{ choices['w'] }}</button>
+        <button type="submit" name="choice" value="2">{{ choices['e'] }}</button>
+        <button type="submit" name="choice" value="3">{{ choices['r'] }}</button>
+    </form>
 </body>
 </html>
