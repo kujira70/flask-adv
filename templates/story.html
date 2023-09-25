@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RPG Story Game</title>
+</head>
+<body>
+    <p>{{ node.text }}</p>
+    <ul>
+        {% for key, choice in node.choices.items() %}
+            <li><a href="{{ url_for('index') }}?choice={{ key }}">{{ choice.text }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
