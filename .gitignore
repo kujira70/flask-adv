@@ -1,1 +1,3 @@
 venv/
+# Excel temporary files
+~$*.xls*
