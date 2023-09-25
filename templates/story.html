@@ -2,10 +2,85 @@
 <html>
 <head>
     <title>Choose Your Adventure</title>
+    <style>
+        body {
+            background-color: black;
+            color: blue;
+            font-family: Arial, sans-serif;
+        }
+    </style>
 </head>
 <body>
-    <h2>{{ story }}</h2>
-    <form method="post">
+    <canvas id="storyCanvas" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('storyCanvas');
+        const ctx = canvas.getContext('2d');
+        let currentY = canvas.height / 2;
+        let targetY = canvas.height / 2;
+        let currentAlpha = 1;
+        let targetAlpha = 0;
+
+        function drawText(text, y, alpha) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.font = '24px Arial';
+            ctx.fillStyle = `rgba(0, 0, 255, ${alpha})`;
+            ctx.shadowColor = 'blue';
+            ctx.shadowBlur = 10;
+
+            const textWidth = ctx.measureText(text).width;
+            const x = (canvas.width - textWidth) / 2;
+
+            ctx.fillText(text, x, y);
+        }
+
+        function animateText(newText) {
+            const animationDuration = 1000;
+            const startTime = Date.now();
+
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / animationDuration, 1);
+
+                currentY = canvas.height / 2 - progress * 50;
+                targetY = canvas.height + progress * 50;
+                currentAlpha = 1 - progress;
+                targetAlpha = progress;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawText("{{ story }}", currentY, currentAlpha);
+                drawText(newText, targetY, targetAlpha);
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // Update the story variable for the next transition
+                    {{ story }} = newText;
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        drawText("{{ story }}", currentY, currentAlpha);
+
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const selectedChoice = e.submitter.value;
+            let newText = "";  // Fetch the new text based on the selected choice
+
+            // Example: Update the newText based on the selected choice
+            if (selectedChoice === "0") {
+                newText = "{{ choices['q'] }}";
+            } else if (selectedChoice === "1") {
+                newText = "{{ choices['w'] }}";
+            } // Add other conditions for other choices
+
+            animateText(newText);
+        });
+    </script>
+
+    <form method="post" style="margin-top: 20px;">
         <button type="submit" name="choice" value="0">{{ choices['q'] }}</button>
         <button type="submit" name="choice" value="1">{{ choices['w'] }}</button>
         <button type="submit" name="choice" value="2">{{ choices['e'] }}</button>
